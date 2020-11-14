@@ -1,0 +1,100 @@
+﻿@model SubCategoryAndCategoryViewModel
+@using FoodChill.Extension
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2>Create a Sub-Category</h2>
+<br />
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<div class="border row backgroundWhite">
+
+    <div class="col-8 ">
+        <form method="post" asp-action="Create">
+            <div class="border backgroundWhite ">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group row">
+
+                    <div class="col-3">
+                        <label asp-for="SubCategory.CategoryID" class="col-form-label"></label>
+                    </div>
+
+                    <div class="col-5 offset-1">
+                        <select id="ddlCategoryList" asp-for="SubCategory.CategoryID" asp-items="Model.CategoryList.ToSelectListItem(Model.SubCategory.CategoryID)" class="form-control"></select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+
+                    <div class="col-4">
+                        <label asp-for="SubCategory.Name" class="col-form-label"></label>
+                    </div>
+
+                    <div class="col-5">
+                        <input asp-for="SubCategory.Name" class="form-control" />
+                    </div>
+                    <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+
+                </div>
+
+                <div class="form-group row ">
+                    <div class="col-8 offset-3">
+                        <partial name="CreateAndBackToIndex" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-3 offset-1 ">
+        @if (Model.SubCategoryList.Count() > 0)
+        {
+            <p> Existing Sub-Categories</p>
+            <div id="SubcategoryList">
+                <ul class="list-group"></ul>
+            </div>
+        }
+        <p>No Sub-Category Exists </p>
+    </div>
+
+</div>
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");} @* Partial file added *@
+    <script>
+        function updateSubCategoryList() { @* Declare a function *@
+            var categorySelected = document.getElementById("ddlCategoryList").value; @* Retrive element by id from form  *@
+
+            $list = $('#SubcategoryList'); @* Select a list item for data *@
+
+            @* An ajax call  *@
+            $.ajax({
+                url: '/Admin/SubCategory/GetSubCategory/' + categorySelected,
+                type: 'GET',
+                dataType: 'text',
+                success: function (data) {  @* If ajax call succedd then it will execute *@
+                    results = JSON.parse(data); 
+                    $list.html('');
+                    $list.append('<ul clas = "list-group">');
+                    for (i in results) {
+                        $list.append('<li class="list-group-item">' + results[i].text + '</li>');
+                    }
+                    $list.append('</ul>');
+                }
+            });
+
+        }
+
+        $(document).ready(function () {
+            updateSubCategoryList();
+        });
+
+        $("#ddlCategoryList").on("chnage", function () {
+            updateSubCategoryList();
+        });
+
+    </script>
+
+}
