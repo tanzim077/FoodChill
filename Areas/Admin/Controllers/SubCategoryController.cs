@@ -14,7 +14,6 @@ namespace FoodChill.Areas.Admin.Controllers
     [Area("Admin")]
     public class SubCategoryController : Controller
     {
-
         private readonly ApplicationDbContext _db;
 
         [TempData]
@@ -25,6 +24,7 @@ namespace FoodChill.Areas.Admin.Controllers
             _db = db;
         }
 
+        //GET Index
         public async Task<IActionResult> Index()
         {
             var subCatogry = await _db.SubCategory.Include(s => s.Category).ToListAsync();
@@ -37,13 +37,13 @@ namespace FoodChill.Areas.Admin.Controllers
             SubCategoryAndCategoryViewModel model = new SubCategoryAndCategoryViewModel()
             {
                 CategoryList = await _db.Category.ToListAsync(),
-                SubCategory = new Models.SubCategory(),
+                SubCategory = new SubCategory(),
                 SubCategoryList = await _db.SubCategory.OrderBy(p => p.Name).Select(p => p.Name).Distinct().ToListAsync()
             };
             return View(model);
         }
 
-        //POST Sub-Category
+        //POST Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SubCategoryAndCategoryViewModel model)
@@ -154,20 +154,20 @@ namespace FoodChill.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var subCategory = await _db.SubCategory.Include(s=>s.Category).SingleOrDefaultAsync(m => m.ID == id);
+            var subCategory1 = await _db.SubCategory.Include(s=>s.Category).SingleOrDefaultAsync(m => m.ID == id);
 
-            if (subCategory == null)
+            if (subCategory1 == null)
             {
                 return NotFound();
             }
 
-            SubCategoryAndCategoryViewModel model = new SubCategoryAndCategoryViewModel()
-            {
-                CategoryList = await _db.Category.ToListAsync(),
-                SubCategory = subCategory,
-                SubCategoryList = await _db.SubCategory.OrderBy(p => p.Name).Select(p => p.Name).Distinct().ToListAsync()
-            };
-            return View(model);
+            //SubCategoryAndCategoryViewModel model = new SubCategoryAndCategoryViewModel()
+            //{
+            //    CategoryList = await _db.Category.ToListAsync(),
+            //    SubCategory = subCategory,
+            //    SubCategoryList = await _db.SubCategory.OrderBy(p => p.Name).Select(p => p.Name).Distinct().ToListAsync()
+            //};
+            return View(subCategory1);
         }
 
         //GET Delete
@@ -177,13 +177,13 @@ namespace FoodChill.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var subCategory = await _db.SubCategory.Include(s => s.Category).SingleOrDefaultAsync(m => m.ID == id);
+            var subCategory1 = await _db.SubCategory.Include(s => s.Category).SingleOrDefaultAsync(m => m.ID == id);
 
-            if (subCategory == null)
+            if (subCategory1 == null)
             {
                 return NotFound();
             }
-            return View(subCategory);
+            return View(subCategory1);
         }
 
         //POST Delete
