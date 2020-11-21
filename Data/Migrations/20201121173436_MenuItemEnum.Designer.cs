@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FoodChill.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201120164933_MenuItemsAdded")]
-    partial class MenuItemsAdded
+    [Migration("20201121173436_MenuItemEnum")]
+    partial class MenuItemEnum
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

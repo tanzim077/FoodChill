@@ -18,7 +18,7 @@ namespace FoodChill.Models
         
         public string Description { get; set; }
         
-        public enum Espicy { NA = 0, Not_Spicy = 1, Spicy =2, Very_Spicy = 3 }
+        public enum Espicy { NA = 0, NotSpicy = 1, Spicy = 2, VerySpicy = 3 }
         
         public string Image { get; set; }
         
