@@ -1,4 +1,5 @@
 ﻿using FoodChill.Data;
+using FoodChill.Models;
 using FoodChill.Models.ViewModels;
 using FoodChill.Utility;
 using Microsoft.AspNetCore.Hosting;
@@ -171,7 +172,43 @@ namespace FoodChill.Areas.Admin.Controllers
             return View(MenuItemVM);
         }
 
+        //GET -- Delete
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            MenuItemVM.MenuItem = await _db.MenuItem.Include(m => m.Category).Include(m => m.SubCategory).SingleOrDefaultAsync(m => m.ID == id);
+            if (MenuItemVM.MenuItem == null)
+            {
+                return NotFound();
+            }
+            return View(MenuItemVM);
+        }
 
+        //POST -- Delete
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int? id)
+        {
+            string webrootpath = _webHostEnvironment.WebRootPath;
+            MenuItem menuItem = await _db.MenuItem.FindAsync(id);
+
+            if (menuItem != null)
+            {
+                var imagepath = Path.Combine(webrootpath, menuItem.Image.TrimStart('\\'));
+                if (System.IO.File.Exists(imagepath))
+                {
+                    System.IO.File.Delete(imagepath);
+                }
+                _db.MenuItem.Remove(menuItem);
+                await _db.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+
+        }
     }
 
 }
