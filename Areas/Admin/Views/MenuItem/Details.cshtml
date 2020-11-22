@@ -1,0 +1,141 @@
+﻿
+@model MenuItemViewModel
+@using FoodChill.Extension
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2>Details Menu Item</h2>
+<br />
+@*<partial name="_StatusMessage" model="Model.StatusMessage" />*@
+<fieldset disabled>
+ <div class="border backgroundWhite row">
+        <div class="col-8">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MenuItem.Name" class="form-control" />
+                </div>
+                @*<span asp-validation-for="MenuItem.Name"></span>*@
+            </div>
+
+            @*<div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Image" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input type="file" name="files" multiple class="form-control" />
+                </div>
+            </div>*@
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Description" class="col-form-label"></label>
+                </div>
+                <div class="col-8" >
+                    @Html.TextAreaFor(m => m.MenuItem.Description)
+                </div>
+                <span asp-validation-for="MenuItem.Description"></span>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Price" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MenuItem.Price"   class="form-control" />
+                </div>
+                @*<span asp-validation-for="MenuItem.Price"></span>*@
+            </div>
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <select asp-for="MenuItem.CategoryId"  class="form-control" id="categoryID" asp-items="Model.Category.ToSelectListItem(Model.MenuItem.CategoryId)"></select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <select asp-for="MenuItem.SubCategoryId"  class="form-control" id="subCategoryID" name="subCategoryID" asp-items="@(new SelectList(string.Empty,"id","name"))"></select>
+                </div>
+            </div>
+
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Spicyness" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <select asp-for="MenuItem.Spicyness"  asp-items="Html.GetEnumSelectList<MenuItem.Espicy>()" class="form-control"></select>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="col-3 offset-1">
+            <img src="@Model.MenuItem.Image" width="100%" style="border-radius: 5 px ; border: 1 px solid #bbb9b9 " />
+        </div>
+
+
+        <div class="col-8 offset-2">
+            <div class="form-group">
+                <div class="col-8 offset-2">
+                    <br />
+                    <partial name="_DetailsAndBackToListPartial" model="Model.MenuItem.ID" />
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</fieldset>
+
+@section Scripts{
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'lists',
+            toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
+            readonly: 1
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            getSubCategory();
+            $('#categoryID').change(function () {
+                getSubCategory();
+            })
+        });
+
+        function getSubCategory() {
+            var url = '@Url.Content("~/")' + "Admin/SubCategory/GetSubCategory";
+            var ddlsource = '#categoryID';
+            $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
+                var items = '';
+                $('#subCategoryID').empty();
+                $.each(data, function (i, subCategory) {
+                    items += "<option value='" + subCategory.value + "'>" + subCategory.text + "</option>";
+                });
+
+                $('#subCategoryID').html(items);
+            })
+        }
+    </script>
+
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+}
+
