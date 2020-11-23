@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using FoodChill.Models;
+using FoodChill.Data;
+using FoodChill.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodChill.Controllers
 {
@@ -14,14 +17,26 @@ namespace FoodChill.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
+        private readonly ApplicationDbContext _db;
+        
+        public HomeController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            IndexViewModel indexVM = new IndexViewModel()
+            {
+                MenuItem = await _db.MenuItem.Include(m => m.Category).Include(s => s.SubCategory).ToListAsync(),
+                Category = await _db.Category.ToListAsync(),
+                Coupon = await _db.Coupon.Where(c => c.IsActive == true).ToListAsync()
+            };
+            return View(indexVM);
         }
 
         public IActionResult Privacy()
