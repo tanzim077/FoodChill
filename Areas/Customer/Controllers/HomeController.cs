@@ -19,9 +19,10 @@ namespace FoodChill.Controllers
 
         private readonly ApplicationDbContext _db;
         
-        public HomeController(ApplicationDbContext db)
+        public HomeController(ApplicationDbContext db, ILogger<HomeController> logger)
         {
             _db = db;
+            _logger = logger;
         }
         //public HomeController(ILogger<HomeController> logger)
         //{
