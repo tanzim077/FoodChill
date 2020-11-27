@@ -12,6 +12,8 @@ using FoodChill.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FoodChill.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace FoodChill
 {
@@ -29,11 +31,15 @@ namespace FoodChill
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"))); //options => options.SignIn.RequireConfirmedAccount = true
-            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                    Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultUI();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+            //.AddDefaultUI();
+
+            services.AddSingleton<IEmailSender, EmailSender>();
+
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddMvc().AddRazorRuntimeCompilation();
