@@ -4,11 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using FoodChill.Data;
 using FoodChill.Models;
+using FoodChill.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodChill.Areas.Admin.Controllers
 {
+    [Authorize(Roles =SD.ManagerUser)]
     [Area("Admin")]
     public class CategoryController : Controller
     {

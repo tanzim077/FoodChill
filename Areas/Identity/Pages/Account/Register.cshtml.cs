@@ -154,7 +154,7 @@ namespace FoodChill.Areas.Identity.Pages.Account
                             }
                         }
                     }
-
+                    return RedirectToAction("Index", "User", new { area = "Admin" });
                     _logger.LogInformation("User created a new account with password.");
 
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

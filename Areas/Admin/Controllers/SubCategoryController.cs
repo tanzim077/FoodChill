@@ -1,6 +1,8 @@
 ﻿using FoodChill.Data;
 using FoodChill.Models;
 using FoodChill.Models.ViewModels;
+using FoodChill.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace FoodChill.Areas.Admin.Controllers
 {
+    [Authorize(Roles = SD.ManagerUser)]
     [Area("Admin")]
     public class SubCategoryController : Controller
     {

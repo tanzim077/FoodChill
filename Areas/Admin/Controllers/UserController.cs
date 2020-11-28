@@ -1,4 +1,6 @@
 ﻿using FoodChill.Data;
+using FoodChill.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace FoodChill.Areas.Admin.Controllers
 {
+    [Authorize(Roles = SD.ManagerUser)]
     [Area("Admin")]
     public class UserController : Controller
     {
@@ -26,7 +29,41 @@ namespace FoodChill.Areas.Admin.Controllers
             var claimsIdentity = (ClaimsIdentity)this.User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
-            return View(await _db.ApplicationUser.Where(c=>c.Id != claim.Value).ToListAsync());
+            return View(await _db.ApplicationUser.Where(c => c.Id != claim.Value).ToListAsync());
+        }
+
+        public async Task<IActionResult> Lock(string id)
+        {
+            if (id==null)
+            {
+                return NotFound();
+            }
+            var applicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(l => l.Id == id);
+            if (applicationUser == null)
+            {
+                return NotFound();
+            }
+            applicationUser.LockoutEnd = DateTime.Now.AddHours(2);
+            
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> UnLock(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var applicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(l => l.Id == id);
+            if (applicationUser == null)
+            {
+                return NotFound();
+            }
+            applicationUser.LockoutEnd = DateTime.Now;
+
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
