@@ -1,4 +1,7 @@
 ﻿@using FoodChill.Utility
+@using Microsoft.AspNetCore.Http
+
+@inject IHttpContextAccessor  HttpContextAccessor
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,10 +48,25 @@
                                 </div>
                             </li>
                         }
-                        <li style="color:wheat">
-                            <a href="#" class="nav-link" >&nbsp <i class="fas fa-shopping-cart">(0)</i></a>
-                        </li>
-
+                        @if (HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount) != null)
+                        {
+                            <li style="color:wheat">
+                                <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="nav-link">
+                                    &nbsp
+                                    @{
+                                        var count = HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount);
+                                    }
+                                    <i class="fas fa-shopping-cart"></i>&nbsp; (@count)
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li style="color:wheat">
+                                <a href="#" class="nav-link"><i class="fas fa-shopping-cart"></i>&nbsp; (0)
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -68,6 +86,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
-</body> 
+</body>
 
 </html>
