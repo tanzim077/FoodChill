@@ -21,7 +21,18 @@ namespace FoodChill.Utility
         public const string ssCouponCode = "ssCouponCode";
 
 
-        //Handle MenuItem Description using Raw Html. [NB: Here is an error, if description is null the application crused which will be fixed later]
+        public const string StatusSubmitted = "Submitted";
+        public const string StatusInProcess = "Being Prepared";
+        public const string StatusReady = "Ready for Pickup";
+        public const string StatusCompleted = "Completed";
+        public const string StatusCancelled = "Cancelled";
+
+        public const string PaymentStatusPending = "Pending";
+        public const string PaymentStatusApproved = "Approved";
+        public const string PaymentStatusRejected = "Rejected";
+
+
+        //Handle MenuItem Description using Raw Html.
         public static string ConvertToRawHtml(string source)
         {
             char[] array = new char[source.Length];

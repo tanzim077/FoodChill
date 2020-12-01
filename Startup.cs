@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FoodChill.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using FoodChill.Utility;
+using Stripe;
 
 namespace FoodChill
 {
@@ -39,7 +41,7 @@ namespace FoodChill
             //.AddDefaultUI();
 
             services.AddSingleton<IEmailSender, EmailSender>();
-
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddMvc().AddRazorRuntimeCompilation();
@@ -80,6 +82,8 @@ namespace FoodChill
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            //StripeConfiguration.SetApiKey = Configuration.GetSection("Stripe")["SecretKey"];
+            StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

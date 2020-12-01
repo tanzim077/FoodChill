@@ -11,8 +11,12 @@
     <title>@ViewData["Title"] - FoodChill</title>
     <script src="https://kit.fontawesome.com/d4a083258e.js" crossorigin="anonymous"></script>
     <script src="https://cdn.tiny.cloud/1/iqn15aqi4hdu2s83dlgten4u0i4grvjdaqfcaa1vsy64qkb1/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="~/js/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/jquery-ui.css" />
+   
 
 </head>
 
@@ -31,7 +35,7 @@
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         @*<li><partial name="~/Views/Shared/_CreateButtonPartial.cshtml" /></li>
-        <li><partial name="~/Views/Shared/_CreateButtonPartial" /></li>*@
+                            <li><partial name="~/Views/Shared/_CreateButtonPartial" /></li>*@
                         @*<li><partial name="_CreateButtonPartial" /></li>*@
                         @if (User.IsInRole(SD.ManagerUser))
                         {
@@ -63,7 +67,8 @@
                         else
                         {
                             <li style="color:wheat">
-                                <a href="#" class="nav-link"><i class="fas fa-shopping-cart"></i>&nbsp; (0)
+                                <a href="#" class="nav-link">
+                                    <i class="fas fa-shopping-cart"></i>&nbsp; (0)
                                 </a>
                             </li>
                         }
@@ -82,9 +87,13 @@
         <div class="container">
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.js"></script>
+
     @RenderSection("Scripts", required: false)
 </body>
 
