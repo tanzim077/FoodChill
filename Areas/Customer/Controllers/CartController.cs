@@ -5,6 +5,7 @@ using FoodChill.Utility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,9 +124,9 @@ namespace FoodChill.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
-        public async Task<IActionResult> SummaryPost()
+        public async Task<IActionResult> SummaryPost(string stripeEmail, string stripeToken)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;  // Claim user identity
+            var claimsIdentity = (ClaimsIdentity)User.Identity;  // Claim user id
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier); 
 
 
@@ -177,8 +178,50 @@ namespace FoodChill.Areas.Customer.Controllers
             HttpContext.Session.SetInt32(SD.ssShoppingCartCount, 0);
             await _db.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
-            //return RedirectToAction("Confirm", "Order", new { id = detailCart.OrderHeader.ID });
+            //Stripe Logic
+
+            if (stripeToken != null)
+            {
+                var customers = new CustomerService();
+                var charges = new ChargeService();
+
+                var customer = customers.Create(new CustomerCreateOptions
+                {
+                    Email = stripeEmail,
+                    SourceToken = stripeToken
+                });
+
+                var charge = charges.Create(new ChargeCreateOptions
+                {
+                    Amount = Convert.ToInt32(detailCart.OrderHeader.OrderTotal * 100),
+                    Description = "Order ID : " + detailCart.OrderHeader.ID,
+                    Currency = "usd",
+                    CustomerId = customer.Id
+                });
+
+                detailCart.OrderHeader.TransactionId = charge.BalanceTransactionId;
+                if (charge.Status.ToLower() == "succeeded")
+                {
+                    //email for successful order
+
+                    detailCart.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
+                    detailCart.OrderHeader.Status = SD.StatusSubmitted;
+                }
+                else
+                {
+                    detailCart.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
+                }
+
+            }
+            else
+            {
+                detailCart.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
+            }
+
+            await _db.SaveChangesAsync();
+
+            //return RedirectToAction("Index", "Home");
+            return RedirectToAction("Confirm", "Order", new { id = detailCart.OrderHeader.ID });
 
         }
 
