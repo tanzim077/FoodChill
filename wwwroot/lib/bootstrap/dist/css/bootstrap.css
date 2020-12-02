@@ -5739,7 +5739,7 @@ a.close.disabled {
 
 .modal-dialog {
   position: relative;
-  width: auto;
+  width: 70%;
   margin: 0.5rem;
   pointer-events: none;
 }
@@ -5908,7 +5908,7 @@ a.close.disabled {
 
 @media (min-width: 576px) {
   .modal-dialog {
-    max-width: 500px;
+    max-width: 70%;
     margin: 1.75rem auto;
   }
   .modal-dialog-scrollable {
@@ -5924,20 +5924,20 @@ a.close.disabled {
     height: calc(100vh - 3.5rem);
   }
   .modal-sm {
-    max-width: 300px;
+    max-width: 70%;
   }
 }
 
 @media (min-width: 992px) {
   .modal-lg,
   .modal-xl {
-    max-width: 800px;
+    max-width: 70%;
   }
 }
 
 @media (min-width: 1200px) {
   .modal-xl {
-    max-width: 1140px;
+    max-width: 70%;
   }
 }
 

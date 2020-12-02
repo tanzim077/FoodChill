@@ -2,6 +2,7 @@
 using FoodChill.Models;
 using FoodChill.Models.ViewModels;
 using FoodChill.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
