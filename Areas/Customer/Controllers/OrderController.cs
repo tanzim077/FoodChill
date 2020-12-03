@@ -1,6 +1,7 @@
 ﻿using FoodChill.Data;
 using FoodChill.Models;
 using FoodChill.Models.ViewModels;
+using FoodChill.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -81,6 +82,31 @@ namespace FoodChill.Areas.Customer.Controllers
 
             return View(orderListVM);
         }
+
+        [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
+        public async Task<IActionResult> ManageOrder(int productPage = 1)
+        {
+
+            List<OrderDetailsViewModel> orderDetailsVM = new List<OrderDetailsViewModel>();
+
+            List<OrderHeader> OrderHeaderList = await _db.OrderHeader.Where(o => o.Status == SD.StatusSubmitted || o.Status == SD.StatusInProcess).OrderByDescending(u => u.PickUpTime).ToListAsync();
+
+
+            foreach (OrderHeader item in OrderHeaderList)
+            {
+                OrderDetailsViewModel individual = new OrderDetailsViewModel
+                {
+                    OrderHeader = item,
+                    OrderDetails = await _db.OrderDetails.Where(o => o.OrderId == item.ID).ToListAsync()
+                };
+                orderDetailsVM.Add(individual);
+            }
+
+
+
+            return View(orderDetailsVM.OrderBy(o => o.OrderHeader.PickUpTime).ToList());
+        }
+
 
         public async Task<IActionResult> GetOrderDetails(int Id)
         {
