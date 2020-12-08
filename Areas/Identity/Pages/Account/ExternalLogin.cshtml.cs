@@ -6,6 +6,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using FoodChill.Models;
+using FoodChill.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -22,18 +24,22 @@ namespace FoodChill.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _emailSender;
-        private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly ILogger<ExternalLoginModel> _logger; 
+        private readonly RoleManager<IdentityRole> _roleManager;
+
 
         public ExternalLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -46,11 +52,29 @@ namespace FoodChill.Areas.Identity.Pages.Account
         [TempData]
         public string ErrorMessage { get; set; }
 
+        
+
         public class InputModel
         {
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+
+            [Required]
+            public string Name { get; set; }
+
+            [Display(Name = "Street Address")]
+            public string StreetAddress { get; set; }
+
+            [Display(Name = "Contact Number")]
+            public string PhoneNO { get; set; }
+
+            public string City { get; set; }
+
+            public string State { get; set; }
+
+            [Display(Name = "Postal Code")]
+            public string PostalCode { get; set; }
         }
 
         public IActionResult OnGetAsync()
@@ -101,7 +125,8 @@ namespace FoodChill.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        Name = info.Principal.FindFirstValue(ClaimTypes.Name)
                     };
                 }
                 return Page();
@@ -121,33 +146,45 @@ namespace FoodChill.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new ApplicationUser
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    Name = Input.Name,
+                    City = Input.City,
+                    PostalCode = Input.PostalCode,
+                    State = Input.State,
+                    StreetAddress = Input.StreetAddress,
+                    PhoneNO = Input.PhoneNO
+                };
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, SD.CustomerEndUser);
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
+                       
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
-                        var userId = await _userManager.GetUserIdAsync(user);
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = userId, code = code },
-                            protocol: Request.Scheme);
+                        //var userId = await _userManager.GetUserIdAsync(user);
+                        //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        //var callbackUrl = Url.Page(
+                        //    "/Account/ConfirmEmail",
+                        //    pageHandler: null,
+                        //    values: new { area = "Identity", userId = userId, code = code },
+                        //    protocol: Request.Scheme);
 
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                        //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                        //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                        // If account confirmation is required, we need to show the link if we don't have a real email sender
-                        if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                        {
-                            return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
-                        }
+                        //// If account confirmation is required, we need to show the link if we don't have a real email sender
+                        //if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                        //{
+                        //    return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
+                        //}
 
                         await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
 

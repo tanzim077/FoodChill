@@ -57,6 +57,20 @@ namespace FoodChill
 
             });
 
+            services.AddAuthentication().AddFacebook(facebookOptions => 
+            {
+                facebookOptions.AppId = "681768106035821";
+                facebookOptions.AppSecret = "332593f85f38fde5001499c0044773d1";
+
+
+            });
+
+            services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = "300385761697-68rdpuf7jqo445p8j7udbrc74fb9k0lj.apps.googleusercontent.com";
+                googleOptions.ClientSecret = "G3aSEnDoRzuWTMs8kGNAJ4wq";
+            });
+
             services.AddSession(options =>
             {
                 options.Cookie.IsEssential = true;
