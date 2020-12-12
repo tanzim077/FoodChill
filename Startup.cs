@@ -40,7 +40,9 @@ namespace FoodChill
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             //.AddDefaultUI();
 
+          
             services.AddSingleton<IEmailSender, EmailSender>();
+            services.AddScoped<IDbInitializer, DbInitializer>();
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -61,8 +63,6 @@ namespace FoodChill
             {
                 facebookOptions.AppId = "681768106035821";
                 facebookOptions.AppSecret = "332593f85f38fde5001499c0044773d1";
-
-
             });
 
             services.AddAuthentication().AddGoogle(googleOptions =>
@@ -76,14 +76,11 @@ namespace FoodChill
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
-
             });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -98,6 +95,8 @@ namespace FoodChill
             }
             //StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
             StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
+
+            dbInitializer.Initialize();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
