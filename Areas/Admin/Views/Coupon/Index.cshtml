@@ -30,6 +30,7 @@
             <table class="table table-dark">
                 <thead>
                     <tr>
+                        <th scope="col">Sl. No</th>
                         <th scope="col">@Html.DisplayNameFor(m => m.Name)</th>
                         <th scope="col">@Html.DisplayNameFor(m => m.MinimumAmount)</th>
                         <th scope="col">@Html.DisplayNameFor(m => m.Discount)</th>
@@ -37,19 +38,19 @@
                     </tr>
                 </thead>
 
-
+                @{int index = 1;}
                 @foreach (var item in Model)
                 {
                     <tbody>
                         <tr>
-
+                            <td>@index</td>
                             <td>@Html.DisplayFor(m => item.Name)</td>
                             <td>@Html.DisplayFor(m => item.MinimumAmount)</td>
                             <td>@Html.DisplayFor(m => item.Discount)</td>
                             <td>@Html.DisplayFor(m => item.IsActive)</td>
                             <td><partial name="TableButtonPartial" model="item.ID" /></td>
-
                         </tr>
+                        @{index++;}
                     </tbody>
                 }
 
