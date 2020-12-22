@@ -31,6 +31,7 @@
             <table class="table table-dark">
                 <thead>
                     <tr>
+                        <th scope="col">Sl. No</th>
                         <th scope="col">@Html.DisplayNameFor(m => m.Name)</th>
                         <th scope="col">@Html.DisplayNameFor(m => m.Email)</th>
                         <th scope="col">@Html.DisplayNameFor(m => m.PhoneNO)</th>
@@ -38,12 +39,12 @@
                     </tr>
                 </thead>
 
-
+                @{int index = 1;}
                 @foreach (var item in Model)
                 {
                     <tbody>
                         <tr>
-
+                            <td>@index</td>
                             <td>@Html.DisplayFor(m => item.Name)</td>
                             <td>@Html.DisplayFor(m => item.Email)</td>
                             <td>@Html.DisplayFor(m => item.PhoneNO)</td>
@@ -58,6 +59,7 @@
                             }
 
                         </tr>
+                        @{index++;}
                     </tbody>
                 }
 

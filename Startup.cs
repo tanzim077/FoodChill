@@ -63,8 +63,6 @@ namespace FoodChill
             {
                 facebookOptions.AppId = "681768106035821";
                 facebookOptions.AppSecret = "332593f85f38fde5001499c0044773d1";
-
-
             });
 
             services.AddAuthentication().AddGoogle(googleOptions =>
@@ -78,10 +76,7 @@ namespace FoodChill
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
-
             });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
