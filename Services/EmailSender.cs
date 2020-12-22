@@ -27,7 +27,7 @@ namespace FoodChill.Services
             var client = new SendGridClient(sendGridKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("admin@foodchill.com", "FoodChill Restaurant"),
+                From = new EmailAddress("tanzimahmed1994@gmail.com", "FoodChill Restaurant"),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message
