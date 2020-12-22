@@ -4,6 +4,7 @@ using FoodChill.Models.ViewModels;
 using FoodChill.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
@@ -19,9 +20,12 @@ namespace FoodChill.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public CartController(ApplicationDbContext db)
+        private readonly IEmailSender _emailSender;
+
+        public CartController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
 
         [BindProperty]
@@ -204,6 +208,7 @@ namespace FoodChill.Areas.Customer.Controllers
                 if (charge.Status.ToLower() == "succeeded")
                 {
                     //email for successful order
+                    await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email, "FoodChill - Order Created " + detailCart.OrderHeader.ID.ToString(), "Order has been submitted successfully.");
 
                     detailCart.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
                     detailCart.OrderHeader.Status = SD.StatusSubmitted;

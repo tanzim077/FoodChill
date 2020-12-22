@@ -40,8 +40,10 @@ namespace FoodChill
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             //.AddDefaultUI();
 
-            services.AddSingleton<IEmailSender, EmailSender>();
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+            
+            services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration);
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddMvc().AddRazorRuntimeCompilation();

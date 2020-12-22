@@ -3,6 +3,7 @@ using FoodChill.Models;
 using FoodChill.Models.ViewModels;
 using FoodChill.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,10 +20,13 @@ namespace FoodChill.Areas.Customer.Controllers
     {
 
         private ApplicationDbContext _db;
+        private readonly IEmailSender _emailSender;
         private int PageSize = 2;
-        public OrderController(ApplicationDbContext db)
+
+        public OrderController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
 
         [Authorize]
@@ -143,6 +147,8 @@ namespace FoodChill.Areas.Customer.Controllers
             await _db.SaveChangesAsync();
 
             //Email logic to notify user that order is ready for pickup
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserID).FirstOrDefault().Email, "FoodChill - Order Ready for Pickup " + orderHeader.ID.ToString(), "Order is ready for pickup.");
+
 
 
             return RedirectToAction("ManageOrder", "Order");
@@ -154,6 +160,8 @@ namespace FoodChill.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusCancelled;
             await _db.SaveChangesAsync();
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserID).FirstOrDefault().Email, "FoodChill - Order Cancelled " + orderHeader.ID.ToString(), "Order has been cancelled successfully.");
+
             return RedirectToAction("ManageOrder", "Order");
         }
 
@@ -253,6 +261,8 @@ namespace FoodChill.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(orderId);
             orderHeader.Status = SD.StatusCompleted;
             await _db.SaveChangesAsync();
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserID).FirstOrDefault().Email, "FoodChill - Order Completed " + orderHeader.ID.ToString(), "Order has been completed successfully.");
+
             return RedirectToAction("OrderPickup", "Order");
         }
     }
